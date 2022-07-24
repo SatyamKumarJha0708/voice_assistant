@@ -5,7 +5,7 @@ import wikipedia
 import webbrowser
 import os
 import smtplib
-import email.utils
+from email.message import EmailMessage
 import pyjokes
 
 engine = pyttsx3.init('sapi5')
@@ -55,6 +55,20 @@ def takeCommand():
         return "None"
     return query
 
+dict = {'college':'college@gmail.com',
+    'dad':'dad@gmail.com'}
+
+def send_email(receiver, subject, message):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login('your_email_id', 'your_password')
+    email = EmailMessage()
+    email['From'] = 'sende_email_id'
+    email['To'] = receiver
+    email['Subject'] = subject
+    email.set_content(message)
+    server.send_message(email)
+    
 if __name__ == "__main__":
     wishMe()
     while True:
@@ -106,6 +120,21 @@ if __name__ == "__main__":
             joke_1=pyjokes.get_joke(language="en",category="all")
             print(joke_1)
             speak(joke_1)
+        
+        elif 'email to' in query:
+            try:
+                name = list(query.split()) 
+                name = name[name.index('to')+1]
+                speak("tell me the subject?")
+                subject=takeCommand()
+                speak("Tell me the text you wanna send?")
+                content = takeCommand()
+                to = dict[name]
+                send_email(to,subject,content)
+                speak("email has been sent")
+            except Exception as e:
+                print(e)
+                speak("sorry unable to send the email at the moment.Try again")
                 
         elif "exit" in query:
             speak("I'm going to sleep now , Wake me up if you want something")
