@@ -1,12 +1,14 @@
 import pyttsx3 
 import speech_recognition as sr
 import datetime
+import winshell
 import wikipedia 
 import webbrowser
 import os
 import smtplib
 from email.message import EmailMessage
 import pyjokes
+import pywhatkit
 
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
@@ -33,7 +35,7 @@ def wishMe():
 
     speak(" hello sir, i'm your voice asssistant. how can i help you? ")       
 
-def takeCommand():
+def takeCommand(ask = False):
     #It takes microphone input from the user and returns string output
 
     r = sr.Recognizer()
@@ -42,6 +44,7 @@ def takeCommand():
         r.adjust_for_ambient_noise(source)
         r.pause_threshold = 1
         audio = r.listen(source)
+        query = ''
 
     try:
         print("I'm Recognizing...")    
@@ -55,46 +58,58 @@ def takeCommand():
         return "None"
     return query
 
-dict = {'college':'college@gmail.com',
-    'dad':'dad@gmail.com'}
+
+dict = {'satyam':'satyamkj24764@gmail.com',
+    'jha':'kumar.satyam0708@gmail.com'}
 
 def send_email(receiver, subject, message):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login('your_email_id', 'your_password')
+    server.login('satyamkj24764@gmail.com', 'yfybsfubeoinqpal')
     email = EmailMessage()
-    email['From'] = 'sende_email_id'
+    email['From'] = 'satyamkj24764@gmail.com'
     email['To'] = receiver
     email['Subject'] = subject
     email.set_content(message)
     server.send_message(email)
+
+def respond(query):
     
-if __name__ == "__main__":
-    wishMe()
     while True:
+    # if 1:
         query = takeCommand().lower()
 
         # Logic for executing tasks based on query
         
 
-        if  'search for'  in query:
+        if  ' wikipedia'  in query:
             speak('Searching Wikipedia...')
             query = query.replace("wikipedia", "")
             results = wikipedia.summary(query, sentences=2)
             speak("According to Wikipedia")
             print(results)
             speak(results)
+        
+        elif 'video' in query:
+            speak('searching for video')
+            pywhatkit.playonyt(query)
 
-        elif 'open youtube' in query:
-            webbrowser.open("youtube.com")
+        elif 'google' in query:
+            speak("What do you want to search for?")
+            search = takeCommand("What do you want to search for?")
+            url = 'http://www.google.com/search?q=' + search
+            webbrowser.get().open(url)
+            print('Here is what i found for' + search)
 
-        elif 'open google' in query:
-            webbrowser.open("google.com")
-
-        elif 'open stackoverflow' in query:
-            webbrowser.open("stackoverflow.com")   
+        elif 'location' in query:
+            speak("What is the location?")
+            location = takeCommand("What is the location?")
+            url = 'http://www.google.nl/maps/place/' + location + '/&amp'
+            webbrowser.get().open(url)
+            print('Here is the location' + location)
 
         elif 'play music' in query:
+            speak("Enjoy with some music")
             music_dir = 'D:\\my_music'
             songs = os.listdir(music_dir)
             print(songs) 
@@ -106,15 +121,11 @@ if __name__ == "__main__":
             print(Time)    
             speak(Time)
 
-        elif 'open vs code' in query:
-            vscodePath = "C:\\Users\\Satyam Jha\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
-            os.startfile(vscodePath)
-        
-        elif 'open careerride' in query:
-            webbrowser.open('careerride.com')
-
-        elif 'open prep insta' in query:
-            webbrowser.open('prepinsta.com')
+        elif "clear my bin" in query:
+            speak('Clearing trash')
+            winshell.recycle_bin().empty(
+                confirm = True, show_progress = False, sound = True
+            )
         
         elif "joke" in query:
             joke_1=pyjokes.get_joke(language="en",category="all")
@@ -139,4 +150,6 @@ if __name__ == "__main__":
         elif "exit" in query:
             speak("I'm going to sleep now , Wake me up if you want something")
             exit()
-        
+wishMe()
+query=takeCommand()
+respond(query)
