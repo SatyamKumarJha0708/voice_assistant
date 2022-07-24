@@ -1,2 +1,2 @@
 # voice_assistant
-It uses speech recognition, OS, pyttx3 like modules.
+It uses speech recognition to send email on your voice command within few moments.
